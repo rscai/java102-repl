@@ -1,17 +1,22 @@
 language: java
 jdk:
-  - oraclejdk8
+- oraclejdk8
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
 before_install:
-    - sudo apt-get install jq
-    - wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
+- sudo apt-get install jq
+- wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest
+  | jq -r .assets[0].browser_download_url)
 script:
-    - ./gradlew clean build check JacocoTestReport
+- "./gradlew clean build check JacocoTestReport"
 after_success:
-    - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+- java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter
+  -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+notifications:
+  slack:
+    secure: Azr9Cqh2xB0hKOQMJGqQMEL61Z7/59d9RNpNE2xj+2p1vv/Kju/CL7raFE0sSfSqvw5TgNzAVQDIdkfVbzdHGJUwS57qCT9SseUJUrniz0Tbb6HevSjED0Z2roIk2y4+cG5djeHgrM4B5TIHL2o1qbxizTs4cF/AuOu2R3Q+jQ7oZ9NMEcH1CPJ2GD6OH45lhGl7FKXygzTTbw6k6suPEEorYzISeMd3hrX/M0h6pz3y/PBUCLix3ics9EYcMQCBozaodbKhbnsLiSbtRlZxih6dkw19Cip0OGqqu1CxCgb5mwDMIyLKk2glyzOFt5Z60VNoveccMsygUslD2aEbg+mk1/x/JxOxs3XSORGLbXx51T+6T0gYLI1Hc3AL4qmnIvOa8Ro/Y3qZeObzShOLcr5RhTlm+awWZQEAjJmWLAz19Jz22NzUfWLYmd8bsJCqhPLeU7ZUlw/l3RaUXV+Y8FzSkowtvC3eFhWMhhfLVMUxGVNAUy7Oaya+f7d14Ars5YHSMIYjlpYrpWqPOyv8ljo4PT8EU3kQsGyb/nddbZ8UzSLB2IrDFNcVmqdwq1sZMWM24uyeA3rt9Q9dCTWEhM08XIFgdXA9JGrcORrxpTJ8fYwQthtzig2HBAUlpG3g+4BP6IFmX3ZIq92cKmzxhB/htGNmZ/PsnPE82LMuksA=
