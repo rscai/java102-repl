@@ -40,3 +40,4 @@ hs_err_pid*
 ### Scala template
 
 /.idea/
+!/gradle/wrapper/gradle-wrapper.jar
