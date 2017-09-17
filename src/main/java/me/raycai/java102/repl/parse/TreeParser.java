@@ -3,6 +3,7 @@ package me.raycai.java102.repl.parse;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import me.raycai.java102.repl.model.Addition;
 import me.raycai.java102.repl.model.Division;
 import me.raycai.java102.repl.model.Expression;
@@ -16,41 +17,41 @@ public class TreeParser extends Parser {
   private class Node {
 
     private Token value;
-    private Node leftChild;
-    private Node rightChild;
-    private Node parent;
+    private Optional<Node> leftChild;
+    private Optional<Node> rightChild;
+    private Optional<Node> parent;
 
     public Node(final Token value) {
       this.value = value;
+      this.leftChild = Optional.empty();
+      this.rightChild = Optional.empty();
+      this.parent = Optional.empty();
     }
 
-    public Node addChild(final Node node) {
-      if (node == null) {
-        return null;
+    public void addChild(final Optional<Node> node) {
+      if (!node.isPresent()) {
+        return;
       }
-      if (leftChild == null) {
+      if (!leftChild.isPresent()) {
         leftChild = node;
-      } else if (rightChild == null) {
+      } else if (!rightChild.isPresent()) {
         rightChild = node;
       }
-      node.parent = this;
-
-      return node;
+      node.get().parent = Optional.of(this);
     }
 
-    public Node removeChild(final Node node) {
-      if (node == null) {
-        return null;
+    public void removeChild(final Optional<Node> node) {
+      if (!node.isPresent()) {
+        return;
       }
-      if (rightChild == node) {
-        rightChild = null;
-      } else if (leftChild == node) {
-        leftChild = null;
+      if (rightChild.isPresent() && rightChild.equals(node)) {
+        rightChild = Optional.empty();
+      } else if (leftChild.isPresent() && leftChild.equals(node)) {
+        leftChild = Optional.empty();
       }
 
-      node.parent = null;
+      node.get().parent = Optional.empty();
 
-      return node;
     }
   }
 
@@ -67,22 +68,22 @@ public class TreeParser extends Parser {
   }
 
   private Node tokensToTree(final List<Token> tokens) throws ParseException {
-    Node lastNode = null;
+    Optional<Node> lastNode = Optional.empty();
     for (final Token token : tokens) {
-      final Node newNode = new Node(token);
-      if (lastNode == null) {
+      final Optional<Node> newNode = Optional.of(new Node(token));
+      if (!lastNode.isPresent()) {
         lastNode = newNode;
       } else {
-        if (lastNode.leftChild != null && lastNode.rightChild != null) {
+        if (lastNode.get().leftChild.isPresent() && lastNode.get().rightChild.isPresent()) {
           throw new ParseException("Last node is full");
         }
-        lastNode.addChild(newNode);
+        lastNode.get().addChild(newNode);
         lastNode = newNode;
-        raise(lastNode);
+        raise(lastNode.get());
       }
     }
 
-    return findRoot(lastNode);
+    return findRoot(lastNode.get());
   }
 
   private Expression treeToExpression(final Node tree) throws ParseException {
@@ -94,14 +95,17 @@ public class TreeParser extends Parser {
           return new Numeric(BigDecimal.valueOf(Long.valueOf(tree.value.text)));
         }
       case ADDITION:
-        return new Addition(treeToExpression(tree.leftChild), treeToExpression(tree.rightChild));
+        return new Addition(treeToExpression(tree.leftChild.get()),
+            treeToExpression(tree.rightChild.get()));
       case SUBTRACTION:
-        return new Subtraction(treeToExpression(tree.leftChild), treeToExpression(tree.rightChild));
+        return new Subtraction(treeToExpression(tree.leftChild.get()),
+            treeToExpression(tree.rightChild.get()));
       case MULTIPLICATION:
-        return new Multiplication(treeToExpression(tree.leftChild),
-            treeToExpression(tree.rightChild));
+        return new Multiplication(treeToExpression(tree.leftChild.get()),
+            treeToExpression(tree.rightChild.get()));
       case DIVISION:
-        return new Division(treeToExpression(tree.leftChild), treeToExpression(tree.rightChild));
+        return new Division(treeToExpression(tree.leftChild.get()),
+            treeToExpression(tree.rightChild.get()));
       default:
         throw new ParseException(String.format("Unexpected token type: %s", tree.value.type));
     }
@@ -111,21 +115,26 @@ public class TreeParser extends Parser {
     if (lastNode.parent == null) {
       return;
     }
-    while (lastNode.parent != null && !isLessThan(lastNode.parent, lastNode)) {
-      final Node parent = lastNode.parent;
-      final Node parentOfParent = lastNode.parent.parent;
-      final Node leftChild = lastNode.leftChild;
-      if (parentOfParent != null) {
-        parentOfParent.removeChild(parent);
-        
+    while (lastNode.parent.isPresent() && !isLessThan(lastNode.parent.get(), lastNode)) {
+      final Optional<Node> parent = lastNode.parent;
+      final Optional<Node> parentOfParent =
+          parent.isPresent() ? parent.get().parent : Optional.empty();
+      final Optional<Node> leftChild = lastNode.leftChild;
+      if (parentOfParent.isPresent()) {
+        parentOfParent.get().removeChild(parent);
+
       }
-      parent.removeChild(lastNode);
+      if (parent.isPresent()) {
+        parent.get().removeChild(Optional.of(lastNode));
+      }
       lastNode.removeChild(leftChild);
-      
-      if (parentOfParent != null) {
-        parentOfParent.addChild(lastNode);
+
+      if (parentOfParent.isPresent()) {
+        parentOfParent.get().addChild(Optional.of(lastNode));
       }
-      parent.addChild(leftChild);
+      if (parent.isPresent()) {
+        parent.get().addChild(leftChild);
+      }
       lastNode.addChild(parent);
 
     }
@@ -144,11 +153,11 @@ public class TreeParser extends Parser {
   }
 
   private Node findRoot(final Node node) {
-    Node currentNode = node;
-    while (currentNode.parent != null) {
-      currentNode = currentNode.parent;
+    Optional<Node> currentNode = Optional.of(node);
+    while (currentNode.get().parent.isPresent()) {
+      currentNode = currentNode.get().parent;
     }
 
-    return currentNode;
+    return currentNode.get();
   }
 }
