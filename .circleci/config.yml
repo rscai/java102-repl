@@ -12,7 +12,7 @@ jobs:
       - checkout
       - restore_cache:
           key: java102-repl-{{ checksum "build.gradle" }}
-      - run: ./graldew clean build check jacocoTestReport
+      - run: ./gradlew clean build check jacocoTestReport
       - save_cache:
           paths:
             - ~/.m2
