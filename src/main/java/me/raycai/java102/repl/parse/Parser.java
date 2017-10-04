@@ -11,7 +11,7 @@ public abstract class Parser {
     this.lexer = lexer;
   }
 
-  public Expression parse(final String text) throws ParseException{
+  public Expression parse(final String text) throws ParseException {
     final List<Token> tokens = lexer.tokenize(text);
     return tokensToExpression(tokens);
   }
