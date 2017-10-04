@@ -1,10 +1,10 @@
 package me.raycai.java102.repl.model;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import java.math.BigDecimal;
 import org.junit.Test;
-
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.core.Is.is;
 
 public class AdditionTest {
 
@@ -17,7 +17,8 @@ public class AdditionTest {
 
   @Test
   public void testFloatAddition() throws Exception {
-    assertThat(new Addition(new Numeric(BigDecimal.valueOf(13.2d)), new Numeric( BigDecimal.valueOf(23.22d)))
-        .evaluate(), is( BigDecimal.valueOf(36.42d)));
+    assertThat(new Addition(new Numeric(BigDecimal.valueOf(13.2d)),
+        new Numeric(BigDecimal.valueOf(23.22d)))
+        .evaluate(), is(BigDecimal.valueOf(36.42d)));
   }
 }

@@ -1,7 +1,7 @@
 package me.raycai.java102.repl.parse;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -22,6 +22,7 @@ public class TreeParserTest {
 
   /**
    * 1 + 2
+   * 
    */
   @Test
   public void testOneOperator() throws Exception {

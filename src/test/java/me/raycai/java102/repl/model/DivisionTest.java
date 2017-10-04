@@ -1,10 +1,10 @@
 package me.raycai.java102.repl.model;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import java.math.BigDecimal;
 import org.junit.Test;
-
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.core.Is.is;
 
 public class DivisionTest {
 
