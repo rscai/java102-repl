@@ -15,6 +15,7 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group:'org.hamcrest', name:'hamcrest-library', version:'1.3'
     testCompile 'org.mockito:mockito-core:2.10.0'
 }
 
@@ -22,9 +23,9 @@ jacocoTestReport {
     sourceSets sourceSets.main
     reports {
         xml.enabled true
-        xml.destination "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+        xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
         html.enabled true
-        html.destination "${buildDir}/reports/jacoco/test/html"
+        html.destination file("${buildDir}/reports/jacoco/test/html")
         csv.enabled false
     }
 }

@@ -8,12 +8,12 @@ public class StateFunctionBuilder<S,E> {
 
   private Map<Class<?>, Consumer<E>> eventFunctions = new HashMap<>();
 
-  public StateFunctionBuilder event(Class<? extends E> eventType, Consumer<E> eventFunction) {
+  public StateFunctionBuilder<S,E> event(Class<? extends E> eventType, Consumer<E> eventFunction) {
     eventFunctions.put(eventType, eventFunction);
     return this;
   }
 
-  public StateFunctionBuilder orElse(Class<? extends E> eventType, Consumer<E> eventFunction) {
+  public StateFunctionBuilder<S,E> orElse(Class<? extends E> eventType, Consumer<E> eventFunction) {
     eventFunctions.put(eventType, eventFunction);
     return this;
   }
