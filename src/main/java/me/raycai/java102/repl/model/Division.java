@@ -10,6 +10,6 @@ public class Division extends BiOperator implements Expression {
 
   @Override
   public BigDecimal evaluate() {
-    return leftOperand.evaluate().divide(rightOperand.evaluate(),6,BigDecimal.ROUND_HALF_UP);
+    return leftOperand.evaluate().divide(rightOperand.evaluate(),leftOperand.evaluate().scale()-rightOperand.evaluate().scale(),BigDecimal.ROUND_HALF_UP);
   }
 }
